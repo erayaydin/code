@@ -1,0 +1,3 @@
+[submodule "MQTT"]
+	path = MQTT
+	url = git@github.com:erayaydin/mqtt.git

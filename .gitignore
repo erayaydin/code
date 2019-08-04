@@ -30,9 +30,6 @@
 ## Temporary ignore LWJGL for submodule.
 /LWJGL
 
-## Temporary ignore MQTT for submodule.
-/MQTT
-
 ## Temporary ignore NodeJS for submodule.
 /NodeJS
 
