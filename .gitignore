@@ -1,0 +1,71 @@
+# Development Gitignore File
+
+## Temporary ignore Android for submodule.
+/Android
+
+## Temporary ignore CPP for submodule.
+/CPP
+
+## Temporary ignore DeepLearning for submodule.
+/DeepLearning
+
+## Temporary ignore Frontend for submodule.
+/Frontend
+
+## Temporary ignore Godot for submodule.
+/Godot
+
+## Temporary ignore Java for submodule.
+/Java
+
+## Temporary ignore Jekyll for submodule.
+/Jekyll
+
+## Temporary ignore LibGDX for submodule.
+/LibGDX
+
+## Temporary ignore Linux for submodule.
+/Linux
+
+## Temporary ignore LWJGL for submodule.
+/LWJGL
+
+## Temporary ignore MQTT for submodule.
+/MQTT
+
+## Temporary ignore NodeJS for submodule.
+/NodeJS
+
+## Temporary ignore Ogre3D for submodule.
+/Ogre3D
+
+## Temporary ignore PHP for submodule.
+/PHP
+
+## Temporary ignore Python for submodule.
+/Python
+
+## Temporary ignore Unity3D for submodule.
+/Unity3D
+
+## Temporary ignore WebAssembly for submodule.
+/WebAssembly
+
+## Temporary ignore Projects for submodule.
+/Projects
+
+## Temporary ignore General for submodule.
+/General
+
+## Temporary ignore Phaser for submodule.
+/Phaser
+
+## Ignore Company related documents.
+/Company
+
+## Ignore secret projects.
+/Secret
+
+## Ignore all secret files.
+*-secret-file*
+
