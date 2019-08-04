@@ -1,8 +1,5 @@
 # Development Gitignore File
 
-## Temporary ignore Android for submodule.
-/Android
-
 ## Temporary ignore CPP for submodule.
 /CPP
 
