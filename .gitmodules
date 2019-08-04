@@ -4,3 +4,6 @@
 [submodule "Android"]
 	path = Android
 	url = git@github.com:erayaydin/android.git
+[submodule "DeepLearning"]
+	path = DeepLearning
+	url = git@github.com:erayaydin/deep-learning.git

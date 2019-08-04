@@ -3,9 +3,6 @@
 ## Temporary ignore CPP for submodule.
 /CPP
 
-## Temporary ignore DeepLearning for submodule.
-/DeepLearning
-
 ## Temporary ignore Frontend for submodule.
 /Frontend
 
