@@ -24,9 +24,6 @@
 ## Temporary ignore Python for submodule.
 /Python
 
-## Temporary ignore Unity3D for submodule.
-/Unity3D
-
 ## Temporary ignore Projects for submodule.
 /Projects
 
