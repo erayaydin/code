@@ -18,9 +18,6 @@
 ## Temporary ignore NodeJS for submodule.
 /NodeJS
 
-## Temporary ignore Ogre3D for submodule.
-/Ogre3D
-
 ## Temporary ignore PHP for submodule.
 /PHP
 
