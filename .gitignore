@@ -30,9 +30,6 @@
 ## Temporary ignore Unity3D for submodule.
 /Unity3D
 
-## Temporary ignore WebAssembly for submodule.
-/WebAssembly
-
 ## Temporary ignore Projects for submodule.
 /Projects
 
