@@ -7,3 +7,6 @@
 [submodule "DeepLearning"]
 	path = DeepLearning
 	url = git@github.com:erayaydin/deep-learning.git
+[submodule "CPP"]
+	path = CPP
+	url = git@github.com:erayaydin/cpp.git

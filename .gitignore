@@ -1,8 +1,5 @@
 # Development Gitignore File
 
-## Temporary ignore CPP for submodule.
-/CPP
-
 ## Temporary ignore Frontend for submodule.
 /Frontend
 
