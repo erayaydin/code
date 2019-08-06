@@ -9,9 +9,6 @@
 ## Temporary ignore Linux for submodule.
 /Linux
 
-## Temporary ignore LWJGL for submodule.
-/LWJGL
-
 ## Temporary ignore NodeJS for submodule.
 /NodeJS
 

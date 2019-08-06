@@ -32,3 +32,6 @@
 [submodule "Presentations"]
 	path = Presentations
 	url = git@github.com:erayaydin/presentations.git
+[submodule "LWJGL"]
+	path = LWJGL
+	url = git@github.com:erayaydin/lwjgl.git
