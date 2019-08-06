@@ -10,3 +10,7 @@
 [submodule "CPP"]
 	path = CPP
 	url = git@github.com:erayaydin/cpp.git
+[submodule "Godot"]
+	path = Godot
+	url = git@github.com:erayaydin/godot.git
+	branch = master
