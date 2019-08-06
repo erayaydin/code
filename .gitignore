@@ -1,8 +1,5 @@
 # Development Gitignore File
 
-## Temporary ignore PHP for submodule.
-/PHP
-
 ## Ignore Company related documents.
 /Company
 

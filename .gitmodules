@@ -71,3 +71,6 @@
 [submodule "Python"]
 	path = Python
 	url = git@github.com:erayaydin/python.git
+[submodule "PHP"]
+	path = PHP
+	url = git@github.com:erayaydin/php.git
