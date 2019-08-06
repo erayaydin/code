@@ -47,3 +47,24 @@
 [submodule "Frontend"]
 	path = Frontend
 	url = git@github.com:erayaydin/frontend.git
+[submodule "Projects/Article/Archive/OldProject"]
+	path = Projects/Article/Archive/OldProject
+	url = git@bitbucket.org:labkod/article.git
+[submodule "Projects/Article/Source/Article"]
+	path = Projects/Article/Source/Article
+	url = git@github.com:erayaydin/article.git
+[submodule "Projects/Cafe/Source/Api"]
+	path = Projects/Cafe/Source/Api
+	url = git@github.com:erayaydin/cafe.git
+[submodule "Projects/IKVNefer/Source/Ikv"]
+	path = Projects/IKVNefer/Source/Ikv
+	url = git@github.com:erayaydin/ikv.git
+[submodule "Projects/Fabrikada/Source/API"]
+	path = Projects/Fabrikada/Source/API
+	url = git@gitlab.com:fabrikada/api.git
+[submodule "Projects/Fabrikada/Source/App"]
+	path = Projects/Fabrikada/Source/App
+	url = git@gitlab.com:fabrikada/app.git
+[submodule "Projects/Fabrikada/Source/Frontend"]
+	path = Projects/Fabrikada/Source/Frontend
+	url = git@gitlab.com:fabrikada/frontend.git
