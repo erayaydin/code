@@ -68,3 +68,6 @@
 [submodule "Projects/Fabrikada/Source/Frontend"]
 	path = Projects/Fabrikada/Source/Frontend
 	url = git@gitlab.com:fabrikada/frontend.git
+[submodule "Python"]
+	path = Python
+	url = git@github.com:erayaydin/python.git
