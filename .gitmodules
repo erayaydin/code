@@ -41,3 +41,6 @@
 [submodule "Linux"]
 	path = Linux
 	url = git@github.com:erayaydin/linux.git
+[submodule "NodeJS"]
+	path = NodeJS
+	url = git@github.com:erayaydin/nodejs.git
