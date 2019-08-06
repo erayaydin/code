@@ -1,8 +1,5 @@
 # Development Gitignore File
 
-## Temporary ignore Frontend for submodule.
-/Frontend
-
 ## Temporary ignore PHP for submodule.
 /PHP
 

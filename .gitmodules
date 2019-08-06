@@ -44,3 +44,6 @@
 [submodule "NodeJS"]
 	path = NodeJS
 	url = git@github.com:erayaydin/nodejs.git
+[submodule "Frontend"]
+	path = Frontend
+	url = git@github.com:erayaydin/frontend.git
