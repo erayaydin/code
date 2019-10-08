@@ -5,5 +5,7 @@
 /Rodo
 /Sanat
 /TurksatFetch
+/Turksat
+/TurksatGet
 # Private Files Folder
 SECRET_*
