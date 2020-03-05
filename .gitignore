@@ -3,9 +3,6 @@
 ## Ignore Company related documents.
 /Company
 
-## Ignore secret projects.
-/Secret
-
 ## Ignore all secret files.
 *-secret-file*
 
