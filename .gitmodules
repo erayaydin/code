@@ -77,3 +77,6 @@
 [submodule "Blender"]
 	path = Blender
 	url = git@github.com:erayaydin/blender.git
+[submodule "Opengl"]
+	path = Opengl
+	url = git@github.com:erayaydin/opengl.git
