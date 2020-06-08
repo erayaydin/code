@@ -80,3 +80,6 @@
 [submodule "OpenGL/Libraries/glad"]
 	path = OpenGL/Libraries/glad
 	url = git@github.com:Dav1dde/glad.git
+[submodule "Blender"]
+	path = Blender
+	url = git@github.com:erayaydin/blender.git
