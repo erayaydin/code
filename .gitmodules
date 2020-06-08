@@ -74,12 +74,6 @@
 [submodule "PHP"]
 	path = PHP
 	url = git@github.com:erayaydin/php.git
-[submodule "OpenGL/Libraries/glfw"]
-	path = OpenGL/Libraries/glfw
-	url = git@github.com:glfw/glfw.git
-[submodule "OpenGL/Libraries/glad"]
-	path = OpenGL/Libraries/glad
-	url = git@github.com:Dav1dde/glad.git
 [submodule "Blender"]
 	path = Blender
 	url = git@github.com:erayaydin/blender.git
