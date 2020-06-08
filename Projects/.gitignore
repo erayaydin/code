@@ -7,5 +7,7 @@
 /TurksatFetch
 /Turksat
 /TurksatGet
+/OnePlay
+/Passlock
 # Private Files Folder
 SECRET_*
