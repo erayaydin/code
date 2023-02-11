@@ -47,9 +47,6 @@
 [submodule "Frontend"]
 	path = Frontend
 	url = git@github.com:erayaydin/frontend.git
-[submodule "Projects/Article/Archive/OldProject"]
-	path = Projects/Article/Archive/OldProject
-	url = git@bitbucket.org:labkod/article.git
 [submodule "Projects/Article/Source/Article"]
 	path = Projects/Article/Source/Article
 	url = git@github.com:erayaydin/article.git
