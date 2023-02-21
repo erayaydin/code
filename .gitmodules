@@ -77,3 +77,6 @@
 [submodule "Opengl"]
 	path = Opengl
 	url = git@github.com:erayaydin/opengl.git
+[submodule "Flutter"]
+	path = Flutter
+	url = git@github.com:erayaydin/flutter.git
