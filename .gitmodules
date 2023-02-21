@@ -89,3 +89,6 @@
 [submodule "Hugo"]
 	path = Hugo
 	url = git@github.com:erayaydin/hugo.git
+[submodule "Scala"]
+	path = Scala
+	url = git@github.com:erayaydin/scala.git
