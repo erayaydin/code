@@ -95,3 +95,6 @@
 [submodule "Architecture"]
 	path = Architecture
 	url = git@github.com:erayaydin/architecture.git
+[submodule "Projects/ProtoHackers"]
+	path = Projects/ProtoHackers
+	url = git@github.com:erayaydin/protohackers.git
