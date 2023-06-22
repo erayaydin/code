@@ -98,3 +98,6 @@
 [submodule "Projects/ProtoHackers"]
 	path = Projects/ProtoHackers
 	url = git@github.com:erayaydin/protohackers.git
+[submodule "Projects/Cuzdan"]
+	path = Projects/Cuzdan
+	url = git@github.com:erayaydin/cuzdan.git
