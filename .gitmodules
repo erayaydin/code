@@ -41,9 +41,6 @@
 [submodule "Linux"]
 	path = Linux
 	url = git@github.com:erayaydin/linux.git
-[submodule "NodeJS"]
-	path = NodeJS
-	url = git@github.com:erayaydin/nodejs.git
 [submodule "Frontend"]
 	path = Frontend
 	url = git@github.com:erayaydin/frontend.git
@@ -92,3 +89,9 @@
 [submodule "Scala"]
 	path = Scala
 	url = git@github.com:erayaydin/scala.git
+[submodule "NodeJS"]
+	path = NodeJS
+	url = git@github.com:erayaydin/nodejs.git
+[submodule "Architecture"]
+	path = Architecture
+	url = git@github.com:erayaydin/architecture.git
