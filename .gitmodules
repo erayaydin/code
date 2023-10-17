@@ -78,6 +78,7 @@
 [submodule "Flutter"]
 	path = Flutter
 	url = git@github.com:erayaydin/flutter.git
+	branch = main
 [submodule "Go"]
 	path = Go
 	url = git@github.com:erayaydin/go.git
