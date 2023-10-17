@@ -104,3 +104,4 @@
 [submodule "Rust"]
 	path = Rust
 	url = git@github.com:erayaydin/rust.git
+	branch = main
