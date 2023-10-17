@@ -39,6 +39,7 @@
 [submodule "Java"]
 	path = Java
 	url = git@github.com:erayaydin/java.git
+	branch = main
 [submodule "Linux"]
 	path = Linux
 	url = git@github.com:erayaydin/linux.git
