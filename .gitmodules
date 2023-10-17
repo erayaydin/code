@@ -44,6 +44,7 @@
 [submodule "Linux"]
 	path = Linux
 	url = git@github.com:erayaydin/linux.git
+	branch = main
 [submodule "Frontend"]
 	path = Frontend
 	url = git@github.com:erayaydin/frontend.git
