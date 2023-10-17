@@ -22,6 +22,7 @@
 [submodule "Ogre3D"]
 	path = Ogre3D
 	url = git@github.com:erayaydin/ogre3d.git
+	branch = main
 [submodule "LibGDX"]
 	path = LibGDX
 	url = git@github.com:erayaydin/libgdx.git
