@@ -98,6 +98,7 @@
 [submodule "NodeJS"]
 	path = NodeJS
 	url = git@github.com:erayaydin/nodejs.git
+	branch = main
 [submodule "Architecture"]
 	path = Architecture
 	url = git@github.com:erayaydin/architecture.git
