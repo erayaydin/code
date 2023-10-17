@@ -1,13 +1,2 @@
 # Private Projects
-/Fabrikada
-/LMS
-/Perwatch
-/Rodo
-/Sanat
-/TurksatFetch
-/Turksat
-/TurksatGet
-/OnePlay
-/Passlock
-# Private Files Folder
-SECRET_*
+Secret/
