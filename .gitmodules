@@ -101,3 +101,6 @@
 [submodule "Projects/Cuzdan"]
 	path = Projects/Cuzdan
 	url = git@github.com:erayaydin/cuzdan.git
+[submodule "Rust"]
+	path = Rust
+	url = git@github.com:erayaydin/rust.git
