@@ -36,6 +36,7 @@
 [submodule "LWJGL"]
 	path = LWJGL
 	url = git@github.com:erayaydin/lwjgl.git
+	branch = main
 [submodule "Java"]
 	path = Java
 	url = git@github.com:erayaydin/java.git
