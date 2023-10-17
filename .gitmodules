@@ -18,7 +18,7 @@
 [submodule "Jekyll"]
 	path = Jekyll
 	url = git@github.com:erayaydin/jekyll.git
-	branch = master
+	branch = main
 [submodule "Ogre3D"]
 	path = Ogre3D
 	url = git@github.com:erayaydin/ogre3d.git
