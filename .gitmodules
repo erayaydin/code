@@ -74,6 +74,7 @@
 [submodule "PHP"]
 	path = PHP
 	url = git@github.com:erayaydin/php.git
+    branch = main
 [submodule "Blender"]
 	path = Blender
 	url = git@github.com:erayaydin/blender.git
