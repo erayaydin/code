@@ -1,4 +1,36 @@
-Code
-===
+# Code
 
+My development folder structure. Each topic lives in its own repository and is
+linked here as a git submodule, so the whole tree can be recreated anywhere.
 
+## Clone
+
+Submodule URLs use SSH, so a GitHub SSH key is required.
+
+```sh
+git clone --recurse-submodules -j8 git@github.com:erayaydin/code.git Code
+```
+
+Already cloned without submodules:
+
+```sh
+git submodule update --init --recursive -j8
+```
+
+## Daily usage
+
+Recipes live in the `justfile` (requires [just](https://github.com/casey/just)).
+
+```sh
+just setup    # one-time: recommended git settings for submodules
+just init     # clone missing submodules
+just update   # pull latest commits of every submodule's tracked branch
+just status   # show uncommitted changes inside submodules
+just bump     # commit updated submodule pointers in this repo
+```
+
+## Adding a new module
+
+```sh
+git submodule add -b main git@github.com:erayaydin/<repo>.git <Folder>
+```
