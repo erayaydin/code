@@ -16,7 +16,7 @@
 [submodule "Godot"]
 	path = Godot
 	url = git@github.com:erayaydin/godot.git
-	branch = master
+	branch = main
 [submodule "Jekyll"]
 	path = Jekyll
 	url = git@github.com:erayaydin/jekyll.git
