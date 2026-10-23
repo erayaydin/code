@@ -106,6 +106,7 @@
 [submodule "Scala"]
 	path = Scala
 	url = git@github.com:erayaydin/scala.git
+  branch = main
 [submodule "NodeJS"]
 	path = NodeJS
 	url = git@github.com:erayaydin/nodejs.git
