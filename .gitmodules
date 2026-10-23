@@ -52,6 +52,7 @@
 [submodule "Frontend"]
 	path = Frontend
 	url = git@github.com:erayaydin/frontend.git
+  branch = main
 [submodule "Projects/Article/Source/Article"]
 	path = Projects/Article/Source/Article
 	url = git@github.com:erayaydin/article.git
@@ -93,6 +94,7 @@
 [submodule "Go"]
 	path = Go
 	url = git@github.com:erayaydin/go.git
+  branch = main
 [submodule "Unity3D"]
 	path = Unity3D
 	url = git@github.com:erayaydin/unity3d.git
