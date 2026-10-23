@@ -1,15 +1,15 @@
 [submodule "Android"]
 	path = Android
 	url = git@github.com:erayaydin/android.git
-  branch = main
+	branch = main
 [submodule "Architecture"]
 	path = Architecture
 	url = git@github.com:erayaydin/architecture.git
-  branch = main
+	branch = main
 [submodule "Blender"]
 	path = Blender
 	url = git@github.com:erayaydin/blender.git
-  branch = main
+	branch = main
 [submodule "CPP"]
 	path = CPP
 	url = git@github.com:erayaydin/cpp.git
@@ -17,7 +17,7 @@
 [submodule "DeepLearning"]
 	path = DeepLearning
 	url = git@github.com:erayaydin/deep-learning.git
-  branch = main
+	branch = main
 [submodule "Flutter"]
 	path = Flutter
 	url = git@github.com:erayaydin/flutter.git
@@ -25,11 +25,11 @@
 [submodule "Frontend"]
 	path = Frontend
 	url = git@github.com:erayaydin/frontend.git
-  branch = main
+	branch = main
 [submodule "Go"]
 	path = Go
 	url = git@github.com:erayaydin/go.git
-  branch = main
+	branch = main
 [submodule "Godot"]
 	path = Godot
 	url = git@github.com:erayaydin/godot.git
@@ -61,7 +61,7 @@
 [submodule "MQTT"]
 	path = MQTT
 	url = git@github.com:erayaydin/mqtt.git
-  branch = main
+	branch = main
 [submodule "NodeJS"]
 	path = NodeJS
 	url = git@github.com:erayaydin/nodejs.git
@@ -77,7 +77,7 @@
 [submodule "PHP"]
 	path = PHP
 	url = git@github.com:erayaydin/php.git
-  branch = main
+	branch = main
 [submodule "Presentations"]
 	path = Presentations
 	url = git@github.com:erayaydin/presentations.git
@@ -85,19 +85,19 @@
 [submodule "Projects/Article/Source/Article"]
 	path = Projects/Article/Source/Article
 	url = git@github.com:erayaydin/article.git
-  branch = master
+	branch = master
 [submodule "Projects/Cafe/Source/Api"]
 	path = Projects/Cafe/Source/Api
 	url = git@github.com:erayaydin/cafe.git
-  branch = master
+	branch = master
 [submodule "Projects/IKVNefer/Source/Ikv"]
 	path = Projects/IKVNefer/Source/Ikv
 	url = git@github.com:erayaydin/ikv.git
-  branch = master
+	branch = master
 [submodule "Projects/ProtoHackers"]
 	path = Projects/ProtoHackers
 	url = git@github.com:erayaydin/protohackers.git
-  branch = main
+	branch = main
 [submodule "Python"]
 	path = Python
 	url = git@github.com:erayaydin/python.git
@@ -109,8 +109,8 @@
 [submodule "Scala"]
 	path = Scala
 	url = git@github.com:erayaydin/scala.git
-  branch = main
+	branch = main
 [submodule "Unity3D"]
 	path = Unity3D
 	url = git@github.com:erayaydin/unity3d.git
-  branch = main
+	branch = main
