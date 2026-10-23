@@ -28,7 +28,7 @@
 [submodule "LibGDX"]
 	path = LibGDX
 	url = git@github.com:erayaydin/libgdx.git
-	branch = master
+	branch = main
 [submodule "Presentations/Libraries/reveal.js"]
 	path = Presentations/Libraries/reveal.js
 	url = git@github.com:hakimel/reveal.js.git
