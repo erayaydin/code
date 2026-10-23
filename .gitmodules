@@ -1,127 +1,116 @@
-[submodule "MQTT"]
-	path = MQTT
-	url = git@github.com:erayaydin/mqtt.git
-  branch = main
 [submodule "Android"]
 	path = Android
 	url = git@github.com:erayaydin/android.git
-[submodule "DeepLearning"]
-	path = DeepLearning
-	url = git@github.com:erayaydin/deep-learning.git
   branch = main
-[submodule "CPP"]
-	path = CPP
-	url = git@github.com:erayaydin/cpp.git
-	branch = main
-[submodule "Godot"]
-	path = Godot
-	url = git@github.com:erayaydin/godot.git
-	branch = main
-[submodule "Jekyll"]
-	path = Jekyll
-	url = git@github.com:erayaydin/jekyll.git
-	branch = main
-[submodule "Ogre3D"]
-	path = Ogre3D
-	url = git@github.com:erayaydin/ogre3d.git
-	branch = main
-[submodule "LibGDX"]
-	path = LibGDX
-	url = git@github.com:erayaydin/libgdx.git
-	branch = main
-[submodule "Presentations/Libraries/reveal.js"]
-	path = Presentations/Libraries/reveal.js
-	url = git@github.com:hakimel/reveal.js.git
-	branch = master
-[submodule "Presentations"]
-	path = Presentations
-	url = git@github.com:erayaydin/presentations.git
-	branch = main
-[submodule "LWJGL"]
-	path = LWJGL
-	url = git@github.com:erayaydin/lwjgl.git
-	branch = main
-[submodule "Java"]
-	path = Java
-	url = git@github.com:erayaydin/java.git
-	branch = main
-[submodule "Linux"]
-	path = Linux
-	url = git@github.com:erayaydin/linux.git
-	branch = main
-[submodule "Frontend"]
-	path = Frontend
-	url = git@github.com:erayaydin/frontend.git
-  branch = main
-[submodule "Projects/Article/Source/Article"]
-	path = Projects/Article/Source/Article
-	url = git@github.com:erayaydin/article.git
-[submodule "Projects/Cafe/Source/Api"]
-	path = Projects/Cafe/Source/Api
-	url = git@github.com:erayaydin/cafe.git
-[submodule "Projects/IKVNefer/Source/Ikv"]
-	path = Projects/IKVNefer/Source/Ikv
-	url = git@github.com:erayaydin/ikv.git
-[submodule "Projects/Fabrikada/Source/API"]
-	path = Projects/Fabrikada/Source/API
-	url = git@gitlab.com:fabrikada/api.git
-[submodule "Projects/Fabrikada/Source/App"]
-	path = Projects/Fabrikada/Source/App
-	url = git@gitlab.com:fabrikada/app.git
-[submodule "Projects/Fabrikada/Source/Frontend"]
-	path = Projects/Fabrikada/Source/Frontend
-	url = git@gitlab.com:fabrikada/frontend.git
-[submodule "Python"]
-	path = Python
-	url = git@github.com:erayaydin/python.git
-	branch = main
-[submodule "PHP"]
-	path = PHP
-	url = git@github.com:erayaydin/php.git
+[submodule "Architecture"]
+	path = Architecture
+	url = git@github.com:erayaydin/architecture.git
   branch = main
 [submodule "Blender"]
 	path = Blender
 	url = git@github.com:erayaydin/blender.git
   branch = main
-[submodule "Opengl"]
-	path = Opengl
-	url = git@github.com:erayaydin/opengl.git
+[submodule "CPP"]
+	path = CPP
+	url = git@github.com:erayaydin/cpp.git
 	branch = main
+[submodule "DeepLearning"]
+	path = DeepLearning
+	url = git@github.com:erayaydin/deep-learning.git
+  branch = main
 [submodule "Flutter"]
 	path = Flutter
 	url = git@github.com:erayaydin/flutter.git
 	branch = main
+[submodule "Frontend"]
+	path = Frontend
+	url = git@github.com:erayaydin/frontend.git
+  branch = main
 [submodule "Go"]
 	path = Go
 	url = git@github.com:erayaydin/go.git
   branch = main
-[submodule "Unity3D"]
-	path = Unity3D
-	url = git@github.com:erayaydin/unity3d.git
-  branch = main
+[submodule "Godot"]
+	path = Godot
+	url = git@github.com:erayaydin/godot.git
+	branch = main
 [submodule "Hugo"]
 	path = Hugo
 	url = git@github.com:erayaydin/hugo.git
 	branch = main
-[submodule "Scala"]
-	path = Scala
-	url = git@github.com:erayaydin/scala.git
+[submodule "Java"]
+	path = Java
+	url = git@github.com:erayaydin/java.git
+	branch = main
+[submodule "Jekyll"]
+	path = Jekyll
+	url = git@github.com:erayaydin/jekyll.git
+	branch = main
+[submodule "LWJGL"]
+	path = LWJGL
+	url = git@github.com:erayaydin/lwjgl.git
+	branch = main
+[submodule "LibGDX"]
+	path = LibGDX
+	url = git@github.com:erayaydin/libgdx.git
+	branch = main
+[submodule "Linux"]
+	path = Linux
+	url = git@github.com:erayaydin/linux.git
+	branch = main
+[submodule "MQTT"]
+	path = MQTT
+	url = git@github.com:erayaydin/mqtt.git
   branch = main
 [submodule "NodeJS"]
 	path = NodeJS
 	url = git@github.com:erayaydin/nodejs.git
 	branch = main
-[submodule "Architecture"]
-	path = Architecture
-	url = git@github.com:erayaydin/architecture.git
+[submodule "Ogre3D"]
+	path = Ogre3D
+	url = git@github.com:erayaydin/ogre3d.git
+	branch = main
+[submodule "Opengl"]
+	path = Opengl
+	url = git@github.com:erayaydin/opengl.git
+	branch = main
+[submodule "PHP"]
+	path = PHP
+	url = git@github.com:erayaydin/php.git
   branch = main
+[submodule "Presentations"]
+	path = Presentations
+	url = git@github.com:erayaydin/presentations.git
+	branch = main
+[submodule "Projects/Article/Source/Article"]
+	path = Projects/Article/Source/Article
+	url = git@github.com:erayaydin/article.git
+  branch = master
+[submodule "Projects/Cafe/Source/Api"]
+	path = Projects/Cafe/Source/Api
+	url = git@github.com:erayaydin/cafe.git
+  branch = master
+[submodule "Projects/IKVNefer/Source/Ikv"]
+	path = Projects/IKVNefer/Source/Ikv
+	url = git@github.com:erayaydin/ikv.git
+  branch = master
 [submodule "Projects/ProtoHackers"]
 	path = Projects/ProtoHackers
 	url = git@github.com:erayaydin/protohackers.git
-[submodule "Projects/Cuzdan"]
-	path = Projects/Cuzdan
-	url = git@github.com:erayaydin/cuzdan.git
+  branch = main
+[submodule "Python"]
+	path = Python
+	url = git@github.com:erayaydin/python.git
+	branch = main
 [submodule "Rust"]
 	path = Rust
 	url = git@github.com:erayaydin/rust.git
 	branch = main
+[submodule "Scala"]
+	path = Scala
+	url = git@github.com:erayaydin/scala.git
+  branch = main
+[submodule "Unity3D"]
+	path = Unity3D
+	url = git@github.com:erayaydin/unity3d.git
+  branch = main
