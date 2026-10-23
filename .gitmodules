@@ -1,6 +1,7 @@
 [submodule "MQTT"]
 	path = MQTT
 	url = git@github.com:erayaydin/mqtt.git
+  branch = main
 [submodule "Android"]
 	path = Android
 	url = git@github.com:erayaydin/android.git
