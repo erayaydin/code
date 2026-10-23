@@ -80,6 +80,7 @@
 [submodule "Blender"]
 	path = Blender
 	url = git@github.com:erayaydin/blender.git
+  branch = main
 [submodule "Opengl"]
 	path = Opengl
 	url = git@github.com:erayaydin/opengl.git
