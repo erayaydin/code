@@ -92,7 +92,7 @@ def main():
         scaffold(work, args.folder, () if args.no_scaffold else SUBFOLDERS)
         run(["git", "init", "-q", "-b", args.branch], cwd=work, dry_run=args.dry_run)
         run(["git", "add", "."], cwd=work, dry_run=args.dry_run)
-        run(["git", "commit", "-q", "-m", "chore: initial structure"],
+        run(["git", "commit", "-q", "-m", "chore: first initialize of the project"],
             cwd=work, dry_run=args.dry_run)
         run(["gh", "repo", "create", slug,
              "--private" if args.private else "--public",
