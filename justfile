@@ -6,10 +6,12 @@ default:
 # Clone missing submodules (after a plain git clone)
 init:
     git submodule update --init --recursive --jobs 8
+    @just attach
 
-# Pull latest commits of every submodule's tracked branch
+# Pull latest commits of every submodule's tracked branch (recursive, parallel fetch)
 update:
-    git submodule update --remote --merge --recursive --jobs 8
+    git fetch --recurse-submodules=yes --jobs 16
+    git submodule update --remote --no-fetch --merge --recursive
 
 # Show uncommitted changes inside submodules
 status:
@@ -24,9 +26,19 @@ bump:
 new folder *flags:
     python3 Tools/generator.py {{folder}} {{flags}}
 
+# Browse folders and recursive submodule status
+tui:
+    uv run --script Tools/tui.py
+
+# Put every top-level submodule on its tracked branch instead of a detached HEAD
+attach:
+    git submodule foreach --quiet 'b=$(git config -f "$toplevel/.gitmodules" "submodule.$name.branch"); git checkout -q "$b" && git branch -q -u "origin/$b" "$b" && echo "$name -> $b"'
+
 # Enable recommended git settings for this repo
 setup:
     git config submodule.recurse true
     git config status.submoduleSummary true
     git config diff.submodule log
     git config fetch.parallel 8
+    git config -f .gitmodules --get-regexp '\.path$' | awk '{print $2}' | while read -r p; do git config "submodule.$p.update" merge; done
+    @just attach

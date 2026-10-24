@@ -27,7 +27,13 @@ just init     # clone missing submodules
 just update   # pull latest commits of every submodule's tracked branch
 just status   # show uncommitted changes inside submodules
 just bump     # commit updated submodule pointers in this repo
+just attach   # put submodules back on main/master after a detached checkout
+just tui      # interactive browser with recursive submodule status
 ```
+
+Top-level submodules live on their tracked branch (`main`, or `master` for archived
+projects) so they can be committed to directly. Nested third-party submodules stay
+detached on purpose: they are pinned versions.
 
 ## Adding a new module
 
