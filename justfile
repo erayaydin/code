@@ -20,6 +20,10 @@ bump:
     git add $(git config -f .gitmodules --get-regexp '\.path$' | awk '{print $2}')
     git diff --cached --quiet || git commit -m "chore: bump submodules" -m "$(git diff --cached --submodule=short | grep '^Submodule')"
 
+# Create a GitHub repo and add it as a submodule
+new folder *flags:
+    python3 Tools/generator.py {{folder}} {{flags}}
+
 # Enable recommended git settings for this repo
 setup:
     git config submodule.recurse true

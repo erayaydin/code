@@ -3,6 +3,9 @@
 ## Ignore Company related documents.
 /Company
 
+## Ignore Python bytecode.
+__pycache__/
+
 ## Ignore all secret files.
 *.secret-file*
 

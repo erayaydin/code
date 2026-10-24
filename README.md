@@ -32,5 +32,13 @@ just bump     # commit updated submodule pointers in this repo
 ## Adding a new module
 
 ```sh
+just new Zig              # creates github.com/erayaydin/zig and adds Zig/ as submodule
+just new Zig --private    # private repo
+just new Zig --dry-run    # preview commands
+```
+
+For an existing repo:
+
+```sh
 git submodule add -b main git@github.com:erayaydin/<repo>.git <Folder>
 ```
