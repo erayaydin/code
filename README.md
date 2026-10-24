@@ -56,5 +56,12 @@ just new Zig --dry-run    # preview commands
 For an existing repo:
 
 ```sh
-git submodule add -b main git@github.com:erayaydin/<repo>.git <Folder>
+just new Zig --existing   # only adds github.com/erayaydin/zig as Zig/
+```
+
+In a private root nothing is created, an existing project is added (bare names go to
+`Projects/`, owner and SSH host come from `[generator]` in the root's `.code-root.toml`):
+
+```sh
+just new Company/Acme/some-project    # adds <owner>/some-project as Projects/some-project
 ```

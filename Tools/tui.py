@@ -770,11 +770,14 @@ class CodeTUI(App):
     def action_new_submodule(self) -> None:
         parent = self.selected_path()
         prefix = self.rel(parent)
-        # the generator adds submodules to the root repo, so the target must not live inside a submodule
-        owner = next((p for p in self.statuses if p and (prefix == p or prefix.startswith(f"{p}/"))), None)
-        if owner:
-            self.notify(f"{prefix} is inside submodule {owner}, creating at root level instead", severity="warning")
-            prefix = ""
+        # the generator adds submodules to a root repo (Code or a private root), never inside a submodule
+        repo = self.owning_submodule(prefix)
+        st = self.statuses.get(repo)
+        root = st.root if st else ""
+        if repo and repo != root:
+            fallback = root or "root level"
+            self.notify(f"{prefix} is inside submodule {repo}, creating in {fallback} instead", severity="warning")
+            prefix = root
 
         def done(result: dict | None) -> None:
             if not result:
@@ -786,6 +789,11 @@ class CodeTUI(App):
             self.run_in_terminal(cmd)
             self.reveal(ROOT / folder)
 
+        if root:
+            # private roots hold existing company projects only, nothing is created on GitHub
+            title = f"Add existing project to {prefix}/ (bare name goes to Projects/)"
+            self.push_screen(PromptScreen(title, "Repo name, e.g. dx-toolbox (owner from .code-root.toml)"), done)
+            return
         self.push_screen(PromptScreen(f"New submodule in {prefix or '.'}/ (creates GitHub repo)",
                                       "Folder name, e.g. Zig", private_toggle=True), done)
 
