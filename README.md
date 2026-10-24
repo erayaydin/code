@@ -32,6 +32,9 @@ just attach   # put submodules back on main/master after a detached checkout
 just tui      # interactive browser with recursive submodule status
 ```
 
+Recipes are thin wrappers around `Tools/repos.py` (plain `python3`, shared with the TUI).
+Add `--dry-run` to any of them to print the plan without running it.
+
 Ignored folders can hold separate private repos ("private roots", git repos directly under
 an ignored parent or listed in a local `.code.local`). Recipes and the TUI handle each root
 on its own, so nothing about them is recorded here. A root's `.code-root.toml` can set
