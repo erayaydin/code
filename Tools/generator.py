@@ -61,6 +61,17 @@ def repo_exists(slug):
                           capture_output=True).returncode == 0
 
 
+def parse_repo(value):
+    """(owner or None, name) from `name`, `name.git`, `owner/name`, git@host:owner/name.git or https URLs."""
+    value = value.strip().rstrip("/").removesuffix(".git")
+    if "://" in value:
+        value = value.split("://", 1)[1].split("/", 1)[-1]
+    elif value.startswith("git@") and ":" in value:
+        value = value.split(":", 1)[1]
+    owner, _, name = value.rpartition("/")
+    return owner.rsplit("/", 1)[-1] or None, name
+
+
 def scaffold(path, folder, subfolders):
     (path / "README.md").write_text(f"# {Path(folder).name}\n")
     for sub in subfolders:
@@ -88,8 +99,8 @@ def parse_args():
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("folder", help="folder, e.g. Zig, Company/Fingerprint/Tools/x or a path inside --root")
     parser.add_argument("--root", help="private root to add the submodule to (default: detected from folder)")
-    parser.add_argument("--repo", help="GitHub repo name (default: kebab-case of folder name in Code, "
-                                        "the folder name as is in a private root)")
+    parser.add_argument("--repo", help="GitHub repo: name, name.git, owner/name or clone URL (default: kebab-case "
+                                        "of folder name in Code, the folder name as is in a private root)")
     parser.add_argument("--owner", help="GitHub owner (default: root config, else authenticated gh user)")
     parser.add_argument("--host", help="SSH host for the submodule URL (default: root config or github.com)")
     parser.add_argument("--branch", default="main", help="branch to track (default: main)")
@@ -120,9 +131,11 @@ def main():
     if target.exists():
         sys.exit(f"error: {target} already exists")
 
-    owner = args.owner or cfg.get("owner") or run(["gh", "api", "user", "--jq", ".login"], capture=True)
+    repo_owner, repo_name = parse_repo(args.repo) if args.repo else (None, None)
+    owner = args.owner or repo_owner or cfg.get("owner") or run(["gh", "api", "user", "--jq", ".login"], capture=True)
+    owner = owner.strip().strip("/")
     host = args.host or cfg.get("host", "github.com")
-    repo = args.repo or (Path(folder).name if root else kebab(Path(folder).name))
+    repo = repo_name or (Path(folder).name if root else kebab(Path(folder).name))
     slug = f"{owner}/{repo}"
     url = f"git@{host}:{slug}.git"
     where = root or "Code"
