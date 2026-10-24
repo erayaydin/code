@@ -1200,5 +1200,38 @@ echo "  pushed $branch ($(git rev-parse --short HEAD))"
         self.call_after_refresh(tree.move_cursor, node)
 
 
+def cli(args: list[str]) -> int:
+    """Non-interactive helpers for the justfile, sharing the TUI's root and protect logic.
+
+    roots            Code (".") and every private root, one per line
+    protected        protected repo paths, one per line
+    update [scope]   same plan as `U` (or `u` on scope): merge updates, fast-forward-only for protected
+    """
+    cmd, rest = args[0], args[1:]
+    if cmd == "roots":
+        print("\n".join([".", *discover_roots()]))
+        return 0
+    app = CodeTUI()
+    app.statuses = collect()
+    if cmd == "protected":
+        print("\n".join(sorted(p for p, s in app.statuses.items() if s.protected)))
+        return 0
+    if cmd == "update":
+        scope = rest[0].strip("/") if rest else ""
+        scope = "" if scope == "." else scope
+        code = 0
+        for step, cwd, label in app.update_steps(scope):
+            print(label, flush=True)
+            code = subprocess.run(step, cwd=cwd).returncode or code
+        return code
+    print(f"unknown command {cmd!r}, see `{Path(__file__).name} --help`", file=sys.stderr)
+    return 2
+
+
 if __name__ == "__main__":
-    CodeTUI().run()
+    if len(sys.argv) > 1 and sys.argv[1] in ("-h", "--help"):
+        print(cli.__doc__)
+    elif len(sys.argv) > 1:
+        sys.exit(cli(sys.argv[1:]))
+    else:
+        CodeTUI().run()

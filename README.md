@@ -25,11 +25,18 @@ Recipes live in the `justfile` (requires [just](https://github.com/casey/just)).
 just setup    # one-time: recommended git settings for submodules
 just init     # clone missing submodules
 just update   # pull latest commits of every submodule's tracked branch
+just update X # same, limited to path X
 just status   # show uncommitted changes inside submodules
-just bump     # commit updated submodule pointers in this repo
+just bump     # commit updated submodule pointers in this repo (or `just bump <root>`)
 just attach   # put submodules back on main/master after a detached checkout
 just tui      # interactive browser with recursive submodule status
 ```
+
+Ignored folders can hold separate private repos ("private roots", git repos directly under
+an ignored parent or listed in a local `.code.local`). Recipes and the TUI handle each root
+on its own, so nothing about them is recorded here. A root's `.code-root.toml` can set
+`protect = ["Projects/**"]`: matching repos are never committed, pushed, attached or merged
+by the tooling, updates only fast-forward clean checkouts.
 
 Top-level submodules live on their tracked branch (`main`, or `master` for archived
 projects) so they can be committed to directly. Nested third-party submodules stay
