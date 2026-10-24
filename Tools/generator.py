@@ -35,7 +35,7 @@ import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from repos import ROOT, ROOT_CONFIG, discover_roots, root_config  # noqa: E402
+from repos import ROOT, ROOT_CONFIG, discover_roots, matches_protect, root_config  # noqa: E402
 
 SUBFOLDERS = ("Tutorials", "Examples", "Projects", "Libraries", "Articles",
               "Tools", "Notes")
@@ -164,6 +164,10 @@ def main():
 
     run(["git", "submodule", "add", "-b", args.branch, url, folder],
         cwd=repo_dir, dry_run=args.dry_run)
+    # same as `just setup`: protected repos get update=none, so recursive git commands never move them
+    protect = root_config(root).get("protect", []) if root else []
+    mode = "none" if matches_protect(folder, protect) else "merge"
+    run(["git", "config", f"submodule.{folder}.update", mode], cwd=repo_dir, dry_run=args.dry_run)
 
     if args.dry_run:
         return
