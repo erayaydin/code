@@ -114,3 +114,7 @@
 	path = Unity3D
 	url = git@github.com:erayaydin/unity3d.git
 	branch = main
+[submodule "Zig"]
+	path = Zig
+	url = git@github.com:erayaydin/zig.git
+	branch = main
