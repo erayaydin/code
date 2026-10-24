@@ -1,6 +1,6 @@
 #!/usr/bin/env -S uv run --script
 # /// script
-# requires-python = ">=3.10"
+# requires-python = ">=3.11"
 # dependencies = ["textual>=0.80"]
 # ///
 """Browse the Code tree, see (nested) submodule status and create folders.
@@ -16,6 +16,8 @@ import shlex
 import subprocess
 import sys
 import time
+import tomllib
+from fnmatch import fnmatchcase
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -37,6 +39,9 @@ GENERATOR = ROOT / "Tools" / "generator.py"
 PRIVATE_PARENTS = ("Company",)
 PRIVATE_EXTRA = ("Projects/Secret",)
 LOCAL_ROOTS_FILE = ROOT / ".code.local"
+# per private root config, e.g. `protect = ["Projects/**"]`: the TUI never commits, pushes,
+# merges or resets inside matching repos, it only fast-forwards clean ones
+ROOT_CONFIG = ".code-root.toml"
 
 
 # --------------------------------------------------------------------------- git
@@ -51,6 +56,7 @@ def git(*args: str, cwd: Path = ROOT) -> str:
 class RepoStatus:
     path: str  # relative to ROOT, "" for the root repo
     root: str = ""  # repo root this belongs to: "" for Code, else a private root like Company/Fingerprint
+    protected: bool = False  # matches a `protect` pattern of its root: sync (fast-forward) only
     pointer: str = " "  # " " ok, "+" checkout differs from recorded, "-" not initialized, "U" conflict
     branch: str = ""
     upstream: str = ""
@@ -103,6 +109,8 @@ class RepoStatus:
             t.append(" ⇡ptr", "bright_yellow")
         if self.clean:
             t.append(" ✓", "green")
+        if self.protected:
+            t.append(" 🛡", "blue")
         return t
 
 
@@ -207,6 +215,32 @@ def repo_status(path: str, pointer: str, tracked: str = "") -> RepoStatus:
     return st
 
 
+def root_config(root: str) -> dict:
+    """`.code-root.toml` of a private root, {} when missing or broken."""
+    cfg = ROOT / root / ROOT_CONFIG
+    if not root or not cfg.is_file():
+        return {}
+    try:
+        return tomllib.loads(cfg.read_text())
+    except (OSError, tomllib.TOMLDecodeError):
+        return {}
+
+
+def matches_protect(inner: str, patterns: list[str]) -> bool:
+    """`inner` (relative to its root) is protected by a pattern. `X/**` covers everything below X."""
+    for pat in patterns:
+        pat = pat.strip().strip("/")
+        if pat.endswith("/**"):
+            base = pat[:-3]
+            parts = inner.split("/")
+            # any proper ancestor-or-self below `base` level counts: Projects/a and Projects/a/lib
+            if any(fnmatchcase("/".join(parts[:i]), base) for i in range(1, len(parts))):
+                return True
+        elif fnmatchcase(inner, pat):
+            return True
+    return False
+
+
 def collect(progress=lambda done, total, msg: None, started=lambda paths: None,
             finished=lambda status: None) -> dict[str, RepoStatus]:
     progress(0, 0, "Listing submodules")
@@ -232,8 +266,11 @@ def collect(progress=lambda done, total, msg: None, started=lambda paths: None,
         st.tracked_branch = st.tracked_branch or branch
         st.url = st.url or url
     roots = sorted(private, key=len, reverse=True)
+    protect = {r: list(root_config(r).get("protect", [])) for r in private}
     for path, st in statuses.items():
         st.root = next((r for r in roots if path == r or path.startswith(f"{r}/")), "")
+        if st.root and path != st.root:
+            st.protected = matches_protect(path[len(st.root) + 1:], protect[st.root])
     return statuses
 
 
@@ -702,6 +739,9 @@ class CodeTUI(App):
         out.add_row("Type", kind)
         if st and st.root and st.root != rel:
             out.add_row("Root", escape(st.root))
+        if st and st.protected:
+            out.add_row("Protected", Text(f"🛡 by {st.root}/{ROOT_CONFIG}: TUI never commits, pushes or "
+                                           "resets here, update only fast-forwards", "blue"))
         if st:
             out.add_row("Remote", escape(st.url or "-"))
             out.add_row("Branch", st.badge())
@@ -815,8 +855,67 @@ exit $code
         parent = self.parent_of(scope)
         return self.update_steps_in(parent, scope[len(parent) + 1:] if parent else scope)
 
+    # protected repos: never merge, only fast-forward a clean checkout to its tracked remote branch
+    FF_SCRIPT = r'''
+b="$BRANCH"
+[ -n "$b" ] || b=$(git rev-parse --abbrev-ref origin/HEAD 2>/dev/null | sed 's#^origin/##')
+[ -z "$b" ] || git fetch --quiet origin "$b" 2>/dev/null || echo "  $P: fetch failed, using last fetched origin/$b"
+if [ -z "$b" ] || ! git rev-parse -q --verify "origin/$b" >/dev/null; then echo "  skip $P: no tracked remote branch"; exit 0; fi
+if [ -n "$(git status --porcelain --ignore-submodules=all)" ]; then echo "  skip $P: uncommitted changes"; exit 0; fi
+cur=$(git branch --show-current)
+if [ -n "$cur" ] && [ "$cur" != "$b" ]; then echo "  skip $P: on branch $cur, tracks $b"; exit 0; fi
+if git merge-base --is-ancestor "origin/$b" HEAD; then
+    ahead=$(git rev-list --count "origin/$b..HEAD")
+    if [ "$ahead" -gt 0 ]; then echo "  skip $P: $ahead local commit(s) ahead"; else echo "  $P up to date"; fi
+    exit 0
+fi
+if ! git merge-base --is-ancestor HEAD "origin/$b"; then echo "  skip $P: diverged from origin/$b"; exit 0; fi
+old=$(git rev-parse --short HEAD)
+git merge --ff-only --quiet "origin/$b" || exit $?
+echo "  fast-forwarded $P $old -> $(git rev-parse --short HEAD)"
+'''
+
+    def protected_update_steps(self, repo: str, inner: str | None) -> list[tuple]:
+        """Update a private root (or a part of it) that has protected repos.
+
+        Unprotected subtrees use the normal merge update, protected repos only fast-forward,
+        parents first so nested repos see their new recorded pins.
+        """
+        prefix = f"{repo}/" if repo else ""
+        scope = f"{prefix}{inner}" if inner else repo
+        inside = [p for p in self.statuses if p != repo and (p == scope or p.startswith(f"{scope}/"))]
+        inside.sort(key=lambda p: (p.count("/"), p))
+        steps: list[tuple] = [(["sh", "-c", "git fetch --recurse-submodules=yes --jobs 16 --quiet || true"],
+                               ROOT / (scope if scope in self.statuses else repo),
+                               f"$ [{scope}] git fetch --recurse-submodules --jobs 16")]
+        covered: list[str] = []
+        for p in inside:
+            if any(p.startswith(f"{c}/") for c in covered):
+                continue
+            st = self.statuses[p]
+            parent = self.parent_of(p)
+            rel_in_parent = p[len(parent) + 1:] if parent else p
+            if st.protected:
+                if not st.initialized:
+                    steps.append((["echo", f"  skip {p}: not initialized"], ROOT, f"🛡 {p}"))
+                    continue
+                steps.append((["env", f"BRANCH={st.tracked_branch}", f"P={p}", "sh", "-c", self.FF_SCRIPT],
+                              ROOT / p, f"🛡 {p}: fast-forward only"))
+                continue
+            has_protected = any(s.protected for q, s in self.statuses.items() if q.startswith(f"{p}/"))
+            cmd = ["git", "submodule", "update", "--remote", "--no-fetch", "--merge", "--init"]
+            if not has_protected:
+                cmd.append("--recursive")
+                covered.append(p)
+            steps.append(([*cmd, "--", rel_in_parent], ROOT / parent, f"$ [{parent}] {' '.join(cmd)} {rel_in_parent}"))
+        return steps
+
     def update_steps_in(self, repo: str, inner: str | None) -> list[tuple]:
         """Run the update script in `repo`, limited to submodule `inner` (relative to repo) if given."""
+        prefix = f"{repo}/" if repo else ""
+        scope = f"{prefix}{inner}" if inner else repo
+        if any(s.protected and (p == scope or p.startswith(f"{scope}/")) for p, s in self.statuses.items()):
+            return self.protected_update_steps(repo, inner)
         args = [inner] if inner else []
         cwd = ROOT / repo
         where = f"[{repo}] " if repo else ""
@@ -856,9 +955,16 @@ exit $code
             chain.append(current)
         return chain  # nearest parent first, its root last (never crosses into Code)
 
+    def is_guarded(self, rel: str) -> bool:
+        """The TUI must not commit, push, merge or reset in this repo (protect pattern of its root)."""
+        st = self.statuses.get(rel)
+        return bool(st and st.protected)
+
     def commit_steps(self, rel: str, all_parents: bool) -> list[tuple[list[str], Path]]:
         steps, child = [], rel
         for parent in self.ancestors(rel):
+            if self.is_guarded(parent):
+                break
             inner = child[len(parent) + 1:] if parent else child
             msg = f"chore({Path(inner).name.lower()}): bump {inner} submodule"
             cwd = ROOT / parent
@@ -880,6 +986,8 @@ exit $code
         for rel in drifted:
             child = rel
             for parent in self.ancestors(rel):
+                if self.is_guarded(parent):
+                    break  # never commit inside a protected repo, nor above it on its behalf
                 children.setdefault(parent, set()).add(child)
                 child = parent
         order = sorted(children, key=lambda p: (-(p.count("/") + 1 if p else 0), p))
@@ -945,7 +1053,7 @@ echo "  pushed $branch ($(git rev-parse --short HEAD))"
 
         ahead, stranded = [], []
         for p, s in self.statuses.items():
-            if not s.initialized or not inside(p) or s.ahead == 0:
+            if not s.initialized or not inside(p) or s.ahead == 0 or self.is_guarded(p):
                 continue
             (stranded if s.detached else ahead).append(p)
         ahead.sort(key=lambda p: (-(p.count("/") + 1 if p else 0), p))
@@ -981,6 +1089,9 @@ echo "  pushed $branch ($(git rev-parse --short HEAD))"
             self.notify("Selected submodule matches the commit recorded in its parent")
             return
         parents = self.ancestors(rel)
+        if self.is_guarded(parents[0]):
+            self.notify(f"{parents[0]} is protected, commit its pointers in a shell", severity="warning")
+            return
         nearest = parents[0] or "root"
         chain = " → ".join(p or "root" for p in parents)
         recorded = git("ls-tree", "HEAD", "--", rel[len(parents[0]) + 1:] if parents[0] else rel,
@@ -994,9 +1105,11 @@ echo "  pushed $branch ($(git rev-parse --short HEAD))"
         if log:
             body.append(f"\n{log}\n", "dim")
         options = [("one", f"Commit pointer in {nearest} only")]
-        if len(parents) > 1:
+        writable = [p for p in parents if not self.is_guarded(p)]
+        if len(parents) > 1 and writable == parents:
             options.append(("all", f"Commit in all parents ({chain})"))
-        options.append(("reset", f"Discard: check out recorded commit {recorded_sha}"))
+        if not st.protected:
+            options.append(("reset", f"Discard: check out recorded commit {recorded_sha}"))
 
         def done(choice: str | None) -> None:
             if choice in ("one", "all"):
