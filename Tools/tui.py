@@ -33,6 +33,10 @@ from textual.widgets.option_list import Option
 
 ROOT = Path(__file__).resolve().parent.parent
 GENERATOR = ROOT / "Tools" / "generator.py"
+# private meta repos live in ignored folders and are never submodules of Code
+PRIVATE_PARENTS = ("Company",)
+PRIVATE_EXTRA = ("Projects/Secret",)
+LOCAL_ROOTS_FILE = ROOT / ".code.local"
 
 
 # --------------------------------------------------------------------------- git
@@ -46,6 +50,7 @@ def git(*args: str, cwd: Path = ROOT) -> str:
 @dataclass
 class RepoStatus:
     path: str  # relative to ROOT, "" for the root repo
+    root: str = ""  # repo root this belongs to: "" for Code, else a private root like Company/Fingerprint
     pointer: str = " "  # " " ok, "+" checkout differs from recorded, "-" not initialized, "U" conflict
     branch: str = ""
     upstream: str = ""
@@ -101,21 +106,50 @@ class RepoStatus:
         return t
 
 
-def list_submodules() -> dict[str, str]:
-    """Map every (recursive) submodule path to its pointer state."""
+def is_repo_root(path: Path) -> bool:
+    """True when `path` is the top of its own git repo (not just a folder inside Code)."""
+    if not path.is_dir() or not (path / ".git").exists():
+        return False
+    top = git("rev-parse", "--show-toplevel", cwd=path).strip()
+    return bool(top) and Path(top).resolve() == path.resolve()
+
+
+def discover_roots() -> list[str]:
+    """Private meta repos: every repo directly under Company/, the extras, and .code.local lines."""
+    candidates: list[str] = []
+    for parent in PRIVATE_PARENTS:
+        base = ROOT / parent
+        if base.is_dir():
+            candidates += sorted(f"{parent}/{p.name}" for p in base.iterdir() if p.is_dir())
+    candidates += PRIVATE_EXTRA
+    if LOCAL_ROOTS_FILE.is_file():
+        for line in LOCAL_ROOTS_FILE.read_text().splitlines():
+            line = line.split("#", 1)[0].strip().strip("/")
+            if line:
+                candidates.append(line)
+    seen: list[str] = []
+    for rel in candidates:
+        if rel not in seen and is_repo_root(ROOT / rel):
+            seen.append(rel)
+    return seen
+
+
+def list_submodules(root: str = "") -> dict[str, str]:
+    """Map every (recursive) submodule path of `root` to its pointer state, paths relative to ROOT."""
     out = {}
-    for line in git("submodule", "status", "--recursive").splitlines():
+    prefix = f"{root}/" if root else ""
+    for line in git("submodule", "status", "--recursive", cwd=ROOT / root).splitlines():
         if not line:
             continue
         state, rest = line[0], line[1:]
         parts = rest.split()
         if len(parts) >= 2:
-            out[parts[1]] = state
+            out[f"{prefix}{parts[1]}"] = state
     # nested submodules of uninitialized parents are not listed, that is fine
     return out
 
 
-def tracked_branches() -> dict[str, tuple[str, str]]:
+def tracked_branches(root: str = "") -> dict[str, tuple[str, str]]:
     """path -> (url, branch) from every .gitmodules in the tree."""
     out: dict[str, tuple[str, str]] = {}
 
@@ -135,7 +169,7 @@ def tracked_branches() -> dict[str, tuple[str, str]]:
             out[path] = (e.get("url", ""), e.get("branch", ""))
             read(ROOT / path, f"{path}/")
 
-    read(ROOT, "")
+    read(ROOT / root, f"{root}/" if root else "")
     return out
 
 
@@ -176,9 +210,13 @@ def repo_status(path: str, pointer: str, tracked: str = "") -> RepoStatus:
 def collect(progress=lambda done, total, msg: None, started=lambda paths: None,
             finished=lambda status: None) -> dict[str, RepoStatus]:
     progress(0, 0, "Listing submodules")
-    pointers = list_submodules()
-    meta = tracked_branches()
-    pointers.setdefault("", " ")
+    pointers: dict[str, str] = {}
+    meta: dict[str, tuple[str, str]] = {}
+    private = discover_roots()
+    for root in ["", *private]:
+        pointers[root] = " "  # a root is never recorded in a parent, so it can't drift
+        pointers.update(list_submodules(root))
+        meta.update(tracked_branches(root))
     paths = list(pointers)
     started(paths)
     tracked = [meta.get(p, ("", ""))[1] for p in paths]
@@ -193,6 +231,9 @@ def collect(progress=lambda done, total, msg: None, started=lambda paths: None,
         st = statuses.setdefault(path, RepoStatus(path=path, pointer="-"))
         st.tracked_branch = st.tracked_branch or branch
         st.url = st.url or url
+    roots = sorted(private, key=len, reverse=True)
+    for path, st in statuses.items():
+        st.root = next((r for r in roots if path == r or path.startswith(f"{r}/")), "")
     return statuses
 
 
@@ -495,6 +536,8 @@ class CodeTUI(App):
             return Text(f"   {path.name}", "dim" if path.name.startswith(".") else "")
         if path == ROOT:
             label = Text(ROOT.name, "bold")
+        elif st and st.root == rel:
+            label = Text(f"🔐 {path.name}", "bold")
         elif st:
             label = Text(f"📦 {path.name}", "bold")
         else:
@@ -650,7 +693,15 @@ class CodeTUI(App):
         out.add_row("Path", escape(rel or "."))
         if self.is_loading(path):
             out.add_row("Status", Text("loading…", "yellow"))
-        out.add_row("Type", "submodule" if st and rel else ("root repo" if not rel else "folder"))
+        if not rel:
+            kind = "root repo"
+        elif st and st.root == rel:
+            kind = "private root (not a submodule of Code)"
+        else:
+            kind = "submodule" if st else "folder"
+        out.add_row("Type", kind)
+        if st and st.root and st.root != rel:
+            out.add_row("Root", escape(st.root))
         if st:
             out.add_row("Remote", escape(st.url or "-"))
             out.add_row("Branch", st.badge())
@@ -709,7 +760,9 @@ class CodeTUI(App):
     def action_fetch(self) -> None:
         self.report(0, 0, "Fetching all submodules")
         self.call_from_thread(self.begin_loading)
-        git("submodule", "foreach", "--recursive", "--quiet", "git fetch --quiet --prune || true")
+        for root in self.roots():
+            git("submodule", "foreach", "--recursive", "--quiet", "git fetch --quiet --prune || true",
+                cwd=ROOT / root)
         self.call_from_thread(self.apply_statuses, self.collect_with_progress())
 
     def run_in_terminal(self, cmd: list[str], cwd: Path = ROOT, pause: bool = True) -> None:
@@ -748,17 +801,28 @@ rm -f "$TMPDIR/code-tui-before.$$" "$TMPDIR/code-tui-after.$$"
 exit $code
 '''
 
+    def roots(self) -> list[str]:
+        """Code ("") first, then every private root found by collect()."""
+        return ["", *sorted({s.root for s in self.statuses.values() if s.root})]
+
     def update_steps(self, scope: str) -> list[tuple]:
-        """Update `scope` (or everything when empty) and all submodules nested in it."""
-        args: list[str] = []
-        cwd = ROOT
-        if scope:
-            parent = self.parent_of(scope)
-            cwd = ROOT / parent
-            args = [scope[len(parent) + 1:] if parent else scope]
-        label = f"$ git fetch --recurse-submodules --jobs 16 && git submodule update --remote --no-fetch " \
+        """Update `scope` and all submodules nested in it. Empty scope = Code and every private root."""
+        if not scope:
+            return [step for root in self.roots() for step in self.update_steps_in(root, None)]
+        st = self.statuses.get(scope)
+        if st and scope == st.root:
+            return self.update_steps_in(scope, None)
+        parent = self.parent_of(scope)
+        return self.update_steps_in(parent, scope[len(parent) + 1:] if parent else scope)
+
+    def update_steps_in(self, repo: str, inner: str | None) -> list[tuple]:
+        """Run the update script in `repo`, limited to submodule `inner` (relative to repo) if given."""
+        args = [inner] if inner else []
+        cwd = ROOT / repo
+        where = f"[{repo}] " if repo else ""
+        label = f"$ {where}git fetch --recurse-submodules --jobs 16 && git submodule update --remote --no-fetch " \
                 f"--merge --recursive {' '.join(args)}".rstrip()
-        env_cmd = ["env", f"ROOT={ROOT}", f"TMPDIR={os.environ.get('TMPDIR', '/tmp')}",
+        env_cmd = ["env", f"ROOT={cwd}", f"TMPDIR={os.environ.get('TMPDIR', '/tmp')}",
                    "sh", "-c", self.UPDATE_SCRIPT, "update", *args]
         return [(env_cmd, cwd, label)]
 
@@ -784,11 +848,13 @@ exit $code
         return max(candidates, key=len) if candidates else ""
 
     def ancestors(self, rel: str) -> list[str]:
+        st = self.statuses.get(rel)
+        stop = st.root if st else ""
         chain, current = [], rel
-        while current:
+        while current and current != stop:
             current = self.parent_of(current)
             chain.append(current)
-        return chain  # nearest parent first, root ("") last
+        return chain  # nearest parent first, its root last (never crosses into Code)
 
     def commit_steps(self, rel: str, all_parents: bool) -> list[tuple[list[str], Path]]:
         steps, child = [], rel
