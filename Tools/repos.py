@@ -46,6 +46,7 @@ class RepoStatus:
     path: str  # relative to ROOT, "" for the root repo
     root: str = ""  # repo root this belongs to: "" for Code, else a private root like Company/Fingerprint
     protected: bool = False  # matches a `protect` pattern of its root: sync (fast-forward) only
+    third_party: bool = False  # GitHub remote of someone else: its nested pins can't be committed by us
     pointer: str = " "  # " " ok, "+" checkout differs from recorded, "-" not initialized, "U" conflict
     branch: str = ""
     upstream: str = ""
@@ -208,6 +209,14 @@ def matches_protect(inner: str, patterns: list[str]) -> bool:
     return False
 
 
+def github_owner(url: str) -> str:
+    """Lower-cased owner of a GitHub remote URL, "" for anything else (AUR, local, ...)."""
+    for marker in ("github.com:", "github.com/"):
+        if marker in url:
+            return url.split(marker, 1)[1].split("/", 1)[0].lower()
+    return ""
+
+
 def collect(progress=lambda done, total, msg: None, started=lambda paths: None,
             finished=lambda status: None) -> dict[str, RepoStatus]:
     progress(0, 0, "Listing submodules")
@@ -232,6 +241,11 @@ def collect(progress=lambda done, total, msg: None, started=lambda paths: None,
         st = statuses.setdefault(path, RepoStatus(path=path, pointer="-"))
         st.tracked_branch = st.tracked_branch or branch
         st.url = st.url or url
+    owners = {o for o in (github_owner(git("remote", "get-url", "origin", cwd=ROOT / r).strip())
+                          for r in ["", *private]) if o}
+    for st in statuses.values():
+        owner = github_owner(st.url)
+        st.third_party = bool(owner) and owner not in owners
     roots = sorted(private, key=len, reverse=True)
     protect = {r: list(root_config(r).get("protect", [])) for r in private}
     for path, st in statuses.items():
@@ -397,7 +411,24 @@ class Workspace:
                 f"--merge --recursive {' '.join(args)}".rstrip()
         env_cmd = ["env", f"ROOT={cwd}", f"TMPDIR={os.environ.get('TMPDIR', '/tmp')}",
                    "sh", "-c", UPDATE_SCRIPT, "update", *args]
-        return [(env_cmd, cwd, label)]
+        return [(env_cmd, cwd, label), *self.restore_third_party_steps(scope)]
+
+    def restore_third_party_steps(self, scope: str) -> list[Step]:
+        """`--remote --recursive` also moves submodules nested in third-party repos to their upstream
+        branch, pointers we can never commit there. Put them back on what the third-party repo records."""
+        inside = [p for p, s in self.statuses.items()
+                  if p and s.third_party and s.initialized and p != s.root
+                  and (not scope or p == scope or p.startswith(f"{scope}/"))
+                  and self.descendants(p)]
+        steps: list[Step] = []
+        for p in sorted(inside):
+            if any(p.startswith(f"{q}/") for q in inside):
+                continue  # restored recursively with its third-party parent
+            if self.statuses[p].protected or any(s.protected for s in self.descendants(p)):
+                continue
+            cmd = ["git", "submodule", "update", "--init", "--recursive", "--quiet"]
+            steps.append((cmd, ROOT / p, f"$ [{p}] {' '.join(cmd)}  (third-party, restore its pins)"))
+        return steps
 
     def protected_update_steps(self, repo: str, inner: str | None) -> list[Step]:
         """Update a private root (or a part of it) that has protected repos.
@@ -432,7 +463,7 @@ class Workspace:
                 cmd.append("--recursive")
                 covered.append(p)
             steps.append(([*cmd, "--", rel_in_parent], ROOT / parent, f"$ [{parent}] {' '.join(cmd)} {rel_in_parent}"))
-        return steps
+        return [*steps, *self.restore_third_party_steps(scope)]
 
     # ------------------------------------------------------------------ commit
 
